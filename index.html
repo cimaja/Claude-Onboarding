@@ -347,6 +347,57 @@
             font-size: 0.95rem;
             line-height: 1.5;
         }
+
+        /* Table of Contents */
+        .toc-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            max-width: 700px;
+        }
+
+        .toc-section {
+            display: flex;
+            align-items: flex-start;
+            gap: 24px;
+            padding: 24px;
+            background: #252525;
+            border-radius: 12px;
+            border: 1px solid #333;
+            transition: all 0.2s ease;
+        }
+
+        .toc-section:hover {
+            border-color: #f093fb;
+            transform: translateX(8px);
+        }
+
+        .toc-number {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .toc-content h3 {
+            font-size: 1.25rem;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .toc-content p {
+            color: #888;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -359,7 +410,46 @@
         <p class="meta">Use arrow keys or click to navigate</p>
     </div>
 
-    <!-- Slide 2: What is Claude Code -->
+    <!-- Slide 2: Table of Contents -->
+    <div class="slide">
+        <div class="slide-header">
+            <h2>What We'll Cover</h2>
+        </div>
+        <div class="slide-content centered">
+            <div class="toc-container">
+                <div class="toc-section">
+                    <div class="toc-number">1</div>
+                    <div class="toc-content">
+                        <h3>Introduction</h3>
+                        <p>How Claude Code works, the role of tools, and what makes it different from chatting with an LLM</p>
+                    </div>
+                </div>
+                <div class="toc-section">
+                    <div class="toc-number">2</div>
+                    <div class="toc-content">
+                        <h3>Context Management</h3>
+                        <p>The /init command, CLAUDE.md files, and how to help Claude understand your project</p>
+                    </div>
+                </div>
+                <div class="toc-section">
+                    <div class="toc-number">3</div>
+                    <div class="toc-content">
+                        <h3>Key Features</h3>
+                        <p>Working with images, planning mode, thinking modes, and essential keyboard shortcuts</p>
+                    </div>
+                </div>
+                <div class="toc-section">
+                    <div class="toc-number">4</div>
+                    <div class="toc-content">
+                        <h3>Extensions</h3>
+                        <p>MCP servers for browser automation, GitHub integration, and more</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: What is Claude Code -->
     <div class="slide">
         <div class="slide-header">
             <span class="section-tag">Introduction</span>
@@ -871,7 +961,7 @@
                 <path d="M15 18l-6-6 6-6"/>
             </svg>
         </button>
-        <span class="slide-counter"><span id="current">1</span> / <span id="total">27</span></span>
+        <span class="slide-counter"><span id="current">1</span> / <span id="total">28</span></span>
         <button onclick="nextSlide()" aria-label="Next slide">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 18l6-6-6-6"/>
