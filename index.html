@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code for Designers</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #1a1a1a;
+            color: #f5f5f5;
+            overflow: hidden;
+        }
+
+        .slide {
+            display: none;
+            min-height: 100vh;
+            padding: 60px 80px;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Title slide */
+        .slide.title-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #2d1f3d 0%, #1a1a2e 100%);
+        }
+
+        .slide.title-slide h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .slide.title-slide .subtitle {
+            font-size: 1.5rem;
+            color: #888;
+            margin-bottom: 3rem;
+        }
+
+        .slide.title-slide .meta {
+            font-size: 1rem;
+            color: #666;
+        }
+
+        /* Content slides */
+        .slide-header {
+            margin-bottom: 40px;
+        }
+
+        .slide-header h2 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .slide-header .section-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(240, 147, 251, 0.2);
+            color: #f093fb;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .slide-content.centered {
+            justify-content: center;
+        }
+
+        .slide-content.stacked {
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .text-content {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .text-content p {
+            font-size: 1.25rem;
+            line-height: 1.8;
+            color: #ccc;
+            margin-bottom: 1.5rem;
+        }
+
+        .text-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .text-content li {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            color: #ccc;
+            padding: 12px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .text-content li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: #f093fb;
+            border-radius: 50%;
+        }
+
+        .image-content {
+            flex: 1.2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-content img {
+            max-width: 100%;
+            max-height: 65vh;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        /* Keyboard shortcut styling */
+        kbd {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 6px;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.9em;
+            color: #fff;
+            box-shadow: 0 2px 0 #222;
+            margin: 0 2px;
+        }
+
+        .shortcut-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 16px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .shortcut-row:last-child {
+            border-bottom: none;
+        }
+
+        .shortcut-keys {
+            min-width: 200px;
+        }
+
+        .shortcut-desc {
+            color: #aaa;
+            font-size: 1.1rem;
+        }
+
+        /* Code blocks */
+        code {
+            background: #2d2d2d;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'SF Mono', Monaco, monospace;
+            color: #f093fb;
+        }
+
+        /* Highlight box */
+        .highlight-box {
+            background: rgba(240, 147, 251, 0.1);
+            border-left: 4px solid #f093fb;
+            padding: 20px 24px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .highlight-box p {
+            margin-bottom: 0;
+            color: #ddd;
+        }
+
+        /* Grid layout for tools */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .tool-card {
+            background: #252525;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .tool-card .tool-name {
+            font-weight: 600;
+            color: #f093fb;
+            margin-bottom: 4px;
+        }
+
+        .tool-card .tool-desc {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(40, 40, 40, 0.9);
+            padding: 12px 24px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav button {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .nav button:hover {
+            background: #333;
+            color: #fff;
+        }
+
+        .nav button svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .slide-counter {
+            color: #666;
+            font-size: 0.9rem;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #f093fb, #f5576c);
+            transition: width 0.3s ease;
+        }
+
+        /* Section divider slides */
+        .slide.section-divider {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .slide.section-divider h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .slide.section-divider p {
+            font-size: 1.3rem;
+            color: #888;
+            max-width: 600px;
+        }
+
+        /* Two column image */
+        .two-images {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        .two-images img {
+            max-height: 55vh;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+
+        /* Feature cards */
+        .feature-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            max-width: 900px;
+        }
+
+        .feature-card {
+            background: #252525;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #333;
+        }
+
+        .feature-card h3 {
+            color: #f093fb;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .feature-card p {
+            color: #999;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progress"></div>
+
+    <!-- Slide 1: Title -->
+    <div class="slide title-slide active">
+        <h1>Claude Code</h1>
+        <p class="subtitle">An Introduction for Designers</p>
+        <p class="meta">Use arrow keys or click to navigate</p>
+    </div>
+
+    <!-- Slide 2: What is Claude Code -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Introduction</span>
+            <h2>What is Claude Code?</h2>
+        </div>
+        <div class="slide-content">
+            <div class="text-content">
+                <p>Claude Code is a <strong>command-line AI assistant</strong> that can read, write, and modify files in your projects.</p>
+                <p>Unlike chatting with Claude on the web, Claude Code has <strong>tools</strong> that let it actually interact with your codebase.</p>
+                <div class="highlight-box">
+                    <p>Think of it as having a coding partner who can see and edit your files directly.</p>
+                </div>
+            </div>
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 17.02.56@2x.png" alt="How coding assistants work">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 3: LLM without tools -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Introduction</span>
+            <h2>The Problem: LLMs Can't See Your Files</h2>
+        </div>
+        <div class="slide-content">
+            <div class="text-content">
+                <p>When you use Claude on the web (claude.ai), it <strong>cannot access any files</strong> on your computer.</p>
+                <p>If you ask "What's in my main.go file?" it has no way to know.</p>
+                <div class="highlight-box">
+                    <p>The language model is powerful, but isolated from your actual project.</p>
+                </div>
+            </div>
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 18.53.44@2x.png" alt="LLM without file access">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 4: LLM with coding assistant -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Introduction</span>
+            <h2>The Solution: Tools</h2>
+        </div>
+        <div class="slide-content">
+            <div class="text-content">
+                <p>Claude Code sits <strong>between you and the language model</strong>, providing tools that Claude can use.</p>
+                <p>When you ask about a file, Claude requests to read it, the tool fetches the content, and Claude can then answer.</p>
+                <div class="highlight-box">
+                    <p>This is called "tool use" - the model asks for actions, and the assistant executes them.</p>
+                </div>
+            </div>
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 18.54.30@2x.png" alt="Coding assistant with tools">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 5: Tool Use -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Introduction</span>
+            <h2>How Tool Use Works</h2>
+        </div>
+        <div class="slide-content">
+            <div class="text-content">
+                <ul>
+                    <li>Models receive plain text instructions on how to use tools</li>
+                    <li>When Claude wants to use a tool, the assistant executes it</li>
+                    <li>Results are sent back to Claude to continue working</li>
+                    <li>Claude models (Opus, Sonnet, Haiku) are particularly good at this</li>
+                </ul>
+            </div>
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 18.54.46@2x.png" alt="Tool use explanation">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 6: Available Tools -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Introduction</span>
+            <h2>Tools Available in Claude Code</h2>
+        </div>
+        <div class="slide-content centered">
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 18.55.51@2x.png" alt="List of tools">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 7: Section - Context -->
+    <div class="slide section-divider">
+        <span class="section-tag">Section 2</span>
+        <h2>Context Management</h2>
+        <p>How to help Claude understand your project</p>
+    </div>
+
+    <!-- Slide 8: Codebase context -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Context</span>
+            <h2>Codebase Context</h2>
+        </div>
+        <div class="slide-content">
+            <div class="text-content">
+                <p>Your project's context is scattered across many files and folders.</p>
+                <p>Claude needs a way to quickly understand what matters without reading everything.</p>
+            </div>
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 19.47.40@2x.png" alt="Codebase context spread">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 9: What Claude needs -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Context</span>
+            <h2>What Claude Needs to Know</h2>
+        </div>
+        <div class="slide-content">
+            <div class="text-content">
+                <p>For Claude to help effectively, it needs <strong>context</strong> about your project:</p>
+                <ul>
+                    <li>Project structure and architecture</li>
+                    <li>Important commands to run</li>
+                    <li>Coding style and conventions</li>
+                    <li>Dependencies and configurations</li>
+                </ul>
+            </div>
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 19.47.17@2x.png" alt="What Claude needs to know">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 10: Irrelevant context -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Context</span>
+            <h2>Too Much Context = Confusion</h2>
+        </div>
+        <div class="slide-content">
+            <div class="text-content">
+                <p>Giving Claude <strong>irrelevant or misleading context</strong> can hurt its performance.</p>
+                <p>The key is providing the <strong>right</strong> information, not all the information.</p>
+                <div class="highlight-box">
+                    <p>Quality over quantity when it comes to context.</p>
+                </div>
+            </div>
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 19.47.49@2x.png" alt="Irrelevant context">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 11: The /init command -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Context</span>
+            <h2>The /init Command</h2>
+        </div>
+        <div class="slide-content">
+            <div class="text-content">
+                <p>Run <code>/init</code> when starting a new project with Claude Code.</p>
+                <ul>
+                    <li>Scans your entire codebase</li>
+                    <li>Creates a summary of the project</li>
+                    <li>Writes it to a <code>CLAUDE.md</code> file</li>
+                    <li>This file is included in every request</li>
+                </ul>
+            </div>
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 19.48.27@2x.png" alt="The /init command">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 12: CLAUDE.md file -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Context</span>
+            <h2>The CLAUDE.md File</h2>
+        </div>
+        <div class="slide-content">
+            <div class="text-content">
+                <p>This file guides Claude through your codebase:</p>
+                <ul>
+                    <li><strong>Important commands</strong> (build, test, deploy)</li>
+                    <li><strong>Architecture</strong> overview</li>
+                    <li><strong>Coding style</strong> preferences</li>
+                    <li><strong>Custom directions</strong> for your project</li>
+                </ul>
+            </div>
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 19.48.53@2x.png" alt="CLAUDE.md file">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 13: Three CLAUDE.md locations -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Context</span>
+            <h2>Three CLAUDE.md Locations</h2>
+        </div>
+        <div class="slide-content centered">
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 19.49.09@2x.png" alt="CLAUDE.md file locations">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 14: Memory saving -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Context</span>
+            <h2>Saving Project Memories</h2>
+        </div>
+        <div class="slide-content">
+            <div class="text-content">
+                <p>Claude can remember things between sessions by saving to CLAUDE.md files.</p>
+                <p>Use the <code>#</code> prefix to tell Claude to remember something:</p>
+                <div class="highlight-box">
+                    <p><code># Always run npm run lint before committing</code></p>
+                </div>
+            </div>
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 19.50.59@2x.png" alt="Memory saving">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 15: Section - Features -->
+    <div class="slide section-divider">
+        <span class="section-tag">Section 3</span>
+        <h2>Key Features</h2>
+        <p>Essential shortcuts and modes to know</p>
+    </div>
+
+    <!-- Slide 16: Screenshots -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Features</span>
+            <h2>Working with Images</h2>
+        </div>
+        <div class="slide-content">
+            <div class="text-content">
+                <p>Claude Code can see and understand images! This is great for designers.</p>
+                <div class="shortcut-row">
+                    <div class="shortcut-keys"><kbd>Ctrl</kbd> + <kbd>V</kbd></div>
+                    <div class="shortcut-desc">Paste image from clipboard</div>
+                </div>
+                <div class="shortcut-row">
+                    <div class="shortcut-keys"><kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>4</kbd></div>
+                    <div class="shortcut-desc">Screenshot on macOS</div>
+                </div>
+                <div class="shortcut-row">
+                    <div class="shortcut-keys"><kbd>Win</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd></div>
+                    <div class="shortcut-desc">Screenshot on Windows</div>
+                </div>
+            </div>
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 19.52.36@2x.png" alt="Screenshot shortcuts">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 17: Planning mode -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Features</span>
+            <h2>Planning Mode</h2>
+        </div>
+        <div class="slide-content">
+            <div class="text-content">
+                <p>For complex tasks, activate <strong>Planning Mode</strong>:</p>
+                <div class="shortcut-row">
+                    <div class="shortcut-keys"><kbd>Shift</kbd> + <kbd>Tab</kbd> <kbd>Shift</kbd> + <kbd>Tab</kbd></div>
+                    <div class="shortcut-desc">Toggle planning mode</div>
+                </div>
+                <div class="highlight-box">
+                    <p>Claude will do thorough exploration and planning <strong>before writing any code</strong>.</p>
+                </div>
+            </div>
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 19.54.02@2x.png" alt="Planning mode">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 18: Thinking modes -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Features</span>
+            <h2>Thinking Modes</h2>
+        </div>
+        <div class="slide-content">
+            <div class="text-content">
+                <p>For challenging problems, ask Claude to think more deeply:</p>
+                <ul>
+                    <li><code>"Think"</code> - Basic reasoning</li>
+                    <li><code>"Think more"</code> - Deeper analysis</li>
+                    <li><code>"Think a lot"</code> - Extended reasoning</li>
+                    <li><code>"Think longer"</code> - Very thorough</li>
+                    <li><code>"Ultrathink"</code> - Maximum depth</li>
+                </ul>
+            </div>
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 19.54.33@2x.png" alt="Thinking modes">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 19: Interrupting -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Features</span>
+            <h2>Interrupting Claude</h2>
+        </div>
+        <div class="slide-content">
+            <div class="text-content">
+                <p>You can stop Claude at any time:</p>
+                <div class="shortcut-row">
+                    <div class="shortcut-keys"><kbd>Esc</kbd></div>
+                    <div class="shortcut-desc">Stop Claude immediately</div>
+                </div>
+                <div class="highlight-box">
+                    <p>Useful when Claude is going in the wrong direction. You can redirect and give new instructions.</p>
+                </div>
+            </div>
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 19.58.56@2x.png" alt="Interrupting">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 20: Rewind -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Features</span>
+            <h2>Rewinding the Conversation</h2>
+        </div>
+        <div class="slide-content">
+            <div class="text-content">
+                <p>Made a wrong turn? Go back in time:</p>
+                <div class="shortcut-row">
+                    <div class="shortcut-keys"><kbd>Esc</kbd> + <kbd>Esc</kbd></div>
+                    <div class="shortcut-desc">Rewind to earlier message</div>
+                </div>
+                <div class="highlight-box">
+                    <p>This removes irrelevant context and lets you maintain focus on what matters.</p>
+                </div>
+            </div>
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 20.01.28@2x.png" alt="Rewind conversation">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 21: Controlling context -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Features</span>
+            <h2>Context Control Summary</h2>
+        </div>
+        <div class="slide-content centered">
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 20.02.36@2x.png" alt="Controlling context">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 22: Section - Extensions -->
+    <div class="slide section-divider">
+        <span class="section-tag">Section 4</span>
+        <h2>Extending Claude Code</h2>
+        <p>MCP Servers add new capabilities</p>
+    </div>
+
+    <!-- Slide 23: MCP Servers -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Extensions</span>
+            <h2>MCP Servers</h2>
+        </div>
+        <div class="slide-content">
+            <div class="text-content">
+                <p><strong>MCP (Model Context Protocol)</strong> lets you add new tools to Claude Code.</p>
+                <p>For example, the Playwright MCP Server gives Claude the ability to:</p>
+                <ul>
+                    <li>Open a browser</li>
+                    <li>Navigate to URLs</li>
+                    <li>Take screenshots</li>
+                    <li>Click on elements</li>
+                </ul>
+            </div>
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 20.04.36@2x.png" alt="MCP Servers">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 24: UI Styling Task -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Extensions</span>
+            <h2>Example: UI Styling with Browser</h2>
+        </div>
+        <div class="slide-content">
+            <div class="text-content">
+                <p>With the Playwright MCP, Claude can:</p>
+                <ul>
+                    <li>Open your app in a browser</li>
+                    <li>Take a screenshot</li>
+                    <li>See the current design</li>
+                    <li>Make styling changes</li>
+                    <li>Verify the results visually</li>
+                </ul>
+                <div class="highlight-box">
+                    <p>Perfect for designers working on UI improvements!</p>
+                </div>
+            </div>
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 19.10.39@2x.png" alt="UI Styling task">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 25: GitHub Integration -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Extensions</span>
+            <h2>GitHub Integration</h2>
+        </div>
+        <div class="slide-content">
+            <div class="text-content">
+                <p>With the GitHub MCP Server, Claude can:</p>
+                <ul>
+                    <li>Read pull request changes</li>
+                    <li>Assess code quality</li>
+                    <li>Write review summaries</li>
+                    <li>Create and manage issues</li>
+                </ul>
+            </div>
+            <div class="image-content">
+                <img src="CleanShot 2026-01-21 at 19.12.09@2x.png" alt="GitHub integration">
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 26: Quick Reference -->
+    <div class="slide">
+        <div class="slide-header">
+            <span class="section-tag">Reference</span>
+            <h2>Quick Reference Card</h2>
+        </div>
+        <div class="slide-content stacked">
+            <div class="feature-cards">
+                <div class="feature-card">
+                    <h3>/init</h3>
+                    <p>Initialize Claude with your project context</p>
+                </div>
+                <div class="feature-card">
+                    <h3>/compact</h3>
+                    <p>Summarize conversation to save context</p>
+                </div>
+                <div class="feature-card">
+                    <h3>/clear</h3>
+                    <p>Start fresh with a new conversation</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Esc</h3>
+                    <p>Stop Claude and redirect</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Esc + Esc</h3>
+                    <p>Rewind to an earlier message</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Shift+Tab x2</h3>
+                    <p>Toggle planning mode</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Ctrl+V</h3>
+                    <p>Paste image for Claude to see</p>
+                </div>
+                <div class="feature-card">
+                    <h3>"Ultrathink"</h3>
+                    <p>Deep reasoning for hard problems</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Slide 27: End -->
+    <div class="slide title-slide">
+        <h1>Questions?</h1>
+        <p class="subtitle">Let's explore Claude Code together</p>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <button onclick="prevSlide()" aria-label="Previous slide">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 18l-6-6 6-6"/>
+            </svg>
+        </button>
+        <span class="slide-counter"><span id="current">1</span> / <span id="total">27</span></span>
+        <button onclick="nextSlide()" aria-label="Next slide">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 18l6-6-6-6"/>
+            </svg>
+        </button>
+    </nav>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total').textContent = totalSlides;
+
+        function showSlide(index) {
+            slides.forEach(s => s.classList.remove('active'));
+            slides[index].classList.add('active');
+            document.getElementById('current').textContent = index + 1;
+            document.getElementById('progress').style.width = ((index + 1) / totalSlides * 100) + '%';
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Touch support
+        let touchStartX = 0;
+        document.addEventListener('touchstart', e => touchStartX = e.touches[0].clientX);
+        document.addEventListener('touchend', e => {
+            const diff = touchStartX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) {
+                diff > 0 ? nextSlide() : prevSlide();
+            }
+        });
+    </script>
+</body>
+</html>
